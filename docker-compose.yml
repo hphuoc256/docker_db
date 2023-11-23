@@ -7,10 +7,11 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
-    command: mongod --replSet rs0 --auth
+    command: mongod --auth --bind_ip_all
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_CONNECTION=${MONGO_CONNECTION}
     volumes:
       - ./mongo_data:/data/db
     networks:
@@ -99,22 +100,6 @@ services:
       - "8082:80"
     depends_on:
       - mariadb
-    networks:
-      - database_network
-
-  # SQL Server
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sqlserver
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SQL_SERVER_SA_PASSWORD}
-      - MSSQL_PID=Express
-      - MSSQL_TCP_PORT=1433
-    ports:
-      - "1433:1433"
-    volumes:
-      - ./sqlserver_data:/var/opt/mssql
     networks:
       - database_network
 
