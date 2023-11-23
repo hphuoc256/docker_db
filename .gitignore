@@ -1,0 +1,26 @@
+# Ignore files and directories created by Docker
+.docker/
+
+# Ignore system-specific files
+Thumbs.db
+.DS_Store
+
+# Ignore node_modules for Node.js projects
+node_modules/
+.idea
+.vscode
+.env
+.env.backup
+
+# Ignore build and log files
+*.log
+*.log.*
+*.json
+*.txt
+
+# Ignore database and data directories
+mongo_data/
+mysql_data/
+mariadb_data/
+postgres_data/
+sqlserver_data/

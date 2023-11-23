@@ -1,0 +1,122 @@
+version: '3.1'
+
+services:
+  # MongoDB Replication
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    command: mongod --replSet rs0 --auth
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    volumes:
+      - ./mongo_data:/data/db
+    networks:
+      - database_network
+
+  # MySQL
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - database_network
+
+  # MariaDB
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+    networks:
+      - database_network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - database_network
+
+  # Redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - database_network
+
+  # phpMyAdmin for MySQL
+  phpmyadmin_mysql:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin_mysql
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - database_network
+
+  # phpMyAdmin for MariaDB
+  phpmyadmin_mariadb:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin_mariadb
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mariadb
+      - PMA_PORT=3306
+    ports:
+      - "8082:80"
+    depends_on:
+      - mariadb
+    networks:
+      - database_network
+
+  # SQL Server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_SERVER_SA_PASSWORD}
+      - MSSQL_PID=Express
+      - MSSQL_TCP_PORT=1433
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./sqlserver_data:/var/opt/mssql
+    networks:
+      - database_network
+
+networks:
+  database_network:
